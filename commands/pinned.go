@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 
 	tempest "github.com/Amatsagu/Tempest"
@@ -15,6 +16,7 @@ var Pinned tempest.Command = tempest.Command{
   SlashCommandHandler: func(itx tempest.CommandInteraction) {
     messages, err := getPinnedMessages(itx.Client.Rest, itx.ChannelId.String())
     if err != nil {
+      log.Printf("failed to get messages: %s", err.Error())
       itx.SendLinearReply(err.Error(), false)
       return
     }
