@@ -40,7 +40,7 @@ func main() {
 
 
   addr := os.Getenv("RAILWAY_STATIC_URL")
-  if err := client.ListenAndServe(addr); err != nil {
+  if err := client.ListenAndServe(fmt.Sprintf("%s:80", addr)); err != nil {
     panic(err)
   }
 
