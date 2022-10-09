@@ -11,8 +11,6 @@ import (
 )
 
 func main() {
-  fmt.Println("### ENV ###", os.Getenv("TOKEN")) 
-
   client := tempest.CreateClient(tempest.ClientOptions{
     ApplicationId: tempest.StringToSnowflake(os.Getenv("APP_ID")),
     PublicKey: os.Getenv("PUBLIC_KEY"),
@@ -46,5 +44,5 @@ func main() {
     panic(err)
   }
 
-  log.Printf("starting server at %s", addr)
+  fmt.Println("starting server at", addr)
 }
