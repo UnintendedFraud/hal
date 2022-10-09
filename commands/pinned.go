@@ -35,6 +35,7 @@ var Pinned tempest.Command = tempest.Command{
     idx := rand.Intn(messagesCount) 
 
     log.Printf("just before send message, %d, %d", idx, messagesCount)
+    log.Printf("# selected message: %+v", messages[idx])
     itx.Client.SendMessage(itx.ChannelId, messages[idx])
   },
 }
