@@ -57,10 +57,11 @@ func getEnvVariables() Env {
       PublicKey: os.Getenv("PUBLIC_KEY"),
       Token: os.Getenv("TOKEN"),
       Port: "8080",
+      Addr: os.Getenv("ADDR"),
     }
   }
 
-  return LocalEnv
+  return Env{}
 }
 
 
