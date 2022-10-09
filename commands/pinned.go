@@ -14,12 +14,16 @@ var Pinned tempest.Command = tempest.Command{
   Description: "will show a random pinned message",
   Options: []tempest.Option{},
   SlashCommandHandler: func(itx tempest.CommandInteraction) {
+    log.Print("inside pinned command")
+
     messages, err := getPinnedMessages(itx.Client.Rest, itx.ChannelId.String())
     if err != nil {
       log.Printf("failed to get messages: %s", err.Error())
       itx.SendLinearReply(err.Error(), false)
       return
     }
+
+    log.Print("after get pinned messages")
 
     messagesCount := len(messages)
 
@@ -30,12 +34,14 @@ var Pinned tempest.Command = tempest.Command{
 
     idx := rand.Intn(messagesCount) 
 
+    log.Printf("just before send message, %d, %d", idx, messagesCount)
     itx.Client.SendMessage(itx.ChannelId, messages[idx])
   },
 }
 
 func getPinnedMessages(rest tempest.Rest, channelID string) ([]tempest.Message, error) {
   route := fmt.Sprintf("/channels/%s/pins", channelID)
+  log.Printf("Route: %s", route)
   bytes, err := rest.Request("GET", route, nil)
   if err != nil {
     return nil, err
@@ -43,6 +49,7 @@ func getPinnedMessages(rest tempest.Rest, channelID string) ([]tempest.Message, 
 
   messages := []tempest.Message{}
   if err = json.Unmarshal(bytes, &messages); err != nil {
+    log.Printf("## error unmarshalling ## %s", err.Error())
     return nil, err
   }
 
