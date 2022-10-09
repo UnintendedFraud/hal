@@ -17,7 +17,7 @@ var Pinned tempest.Command = tempest.Command{
   Options: []tempest.Option{},
   SlashCommandHandler: func(itx tempest.CommandInteraction) {
 
-    _, close := itx.Client.AwaitComponent([]string{itx.Id.String()}, timeout)
+    _, close := itx.Client.AwaitComponent([]string{itx.Data.Id.String()}, timeout)
 
     messages, err := getPinnedMessages(itx.Client.Rest, itx.ChannelId.String())
     if err != nil {
