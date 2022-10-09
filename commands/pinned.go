@@ -36,7 +36,12 @@ var Pinned tempest.Command = tempest.Command{
 
     log.Printf("just before send message, %d, %d", idx, messagesCount)
     log.Printf("# selected message: %+v", messages[idx])
-    itx.Client.SendMessage(itx.ChannelId, messages[idx])
+    
+    if _, err = itx.Client.SendMessage(itx.ChannelId, messages[idx]); err != nil {
+      log.Printf("failed to send message: %s", err.Error())
+      itx.SendLinearReply(err.Error(), false)
+    }
+
   },
 }
 
