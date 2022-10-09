@@ -33,7 +33,6 @@ func main() {
   }) 
 
 
-  client.RegisterCommand(commands.Hello)
   client.RegisterCommand(commands.Pinned)
 
   client.SyncCommands([]tempest.Snowflake{
