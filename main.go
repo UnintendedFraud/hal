@@ -11,10 +11,12 @@ import (
 )
 
 func main() {
+  env := getEnvVariables()
+
   client := tempest.CreateClient(tempest.ClientOptions{
-    ApplicationId: tempest.StringToSnowflake(os.Getenv("APP_ID")),
-    PublicKey: os.Getenv("PUBLIC_KEY"),
-    Token: os.Getenv("TOKEN"),
+    ApplicationId: env.AppID,
+    PublicKey: env.PublicKey,
+    Token: env.Token,
     PreCommandExecutionHandler: func(itx tempest.CommandInteraction) *tempest.ResponseData {
       log.Printf("running [%s] slash command", itx.Data.Name)
       return nil
@@ -39,10 +41,33 @@ func main() {
   }, nil, false)
 
 
-  addr := os.Getenv("RAILWAY_STATIC_URL")
-  if err := client.ListenAndServe(fmt.Sprintf("%s:80", addr)); err != nil {
+  addr := fmt.Sprintf("%s:%s", env.Addr, env.Port)
+  fmt.Println("starting server at", addr)
+
+  if err := client.ListenAndServe(addr); err != nil {
     panic(err)
   }
 
-  fmt.Println("starting server at", addr)
+}
+
+func getEnvVariables() Env {
+  if os.Getenv("RAILWAY_ENVIRONMENT") == "production" {
+    return Env{
+      AppID: tempest.StringToSnowflake(os.Getenv("APP_ID")),
+      PublicKey: os.Getenv("PUBLIC_KEY"),
+      Token: os.Getenv("TOKEN"),
+      Port: "8080",
+    }
+  }
+
+  return LocalEnv
+}
+
+
+type Env struct {
+  AppID tempest.Snowflake
+  PublicKey string
+  Token string
+  Port string
+  Addr string
 }
