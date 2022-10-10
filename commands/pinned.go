@@ -57,8 +57,6 @@ var Pinned tempest.Command = tempest.Command{
       itx.SendLinearReply("no data for this channel", false)
     }
 
-    fmt.Printf("\n\n%+v\n\n", channelData.MessageOfTheDay)
-
     if channelData.Count == 0 {
       itx.SendLinearReply("no pinned messages", false)
       return
@@ -69,6 +67,7 @@ var Pinned tempest.Command = tempest.Command{
     currentMessageDate := channelData.MessageOfTheDay.Date.Format("2006/01/02")
 
     if channelData.MessageOfTheDay == nil || todayDate != currentMessageDate {
+      rand.Seed(time.Now().UnixNano())
       newMessage := channelData.Messages[rand.Intn(channelData.Count)] 
       
       channelData.MessageOfTheDay = &MessageOfTheDay{
