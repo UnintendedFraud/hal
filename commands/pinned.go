@@ -23,16 +23,23 @@ type PinnedData struct {
 // not ideal but good enough for this
 var data map[string]*PinnedData = make(map[string]*PinnedData)
 
-func InitPinned(c tempest.Client, channelIDs []tempest.Snowflake) error {
-  for _, cid := range channelIDs {
-    messages, err := getPinnedMessages(c.Rest, cid.String())
+func InitPinned(c tempest.Client, serverIDs []tempest.Snowflake) error {
+  for _, sid := range serverIDs {
+    channels, err := getChannels(c.Rest, sid.String())
     if err != nil {
       return err
     }
 
-    data[cid.String()] = &PinnedData{
-      Messages: messages,
-      Count: len(messages),
+    for _, cid := range channels {
+      messages, err := getPinnedMessages(c.Rest, cid.ID.String())
+      if err != nil {
+        fmt.Println("failed to get the pinned messages for channel", cid, err)
+      }
+
+      data[cid.ID.String()] = &PinnedData{
+        Messages: messages,
+        Count: len(messages),
+      }
     }
   }
 
@@ -48,7 +55,6 @@ var Pinned tempest.Command = tempest.Command{
     if !exist {
       itx.SendLinearReply("no data for this channel", false)
     }
-
 
     if channelData.Count == 0 {
       itx.SendLinearReply("no pinned messages", false)
@@ -74,8 +80,25 @@ var Pinned tempest.Command = tempest.Command{
   },
 }
 
+func getChannels(rest tempest.Rest, serverID string) ([]Channel, error) {
+  route := fmt.Sprintf("/guilds/%s/channels", serverID)
+
+  bytes, err := rest.Request("GET", route, nil)
+  if err != nil {
+    return nil, err
+  }
+
+  channels := []Channel{}
+  if err = json.Unmarshal(bytes, &channels); err != nil {
+    return nil, err
+  }
+
+  return channels, nil
+}
+
 func getPinnedMessages(rest tempest.Rest, channelID string) ([]tempest.Message, error) {
   route := fmt.Sprintf("/channels/%s/pins", channelID)
+
   bytes, err := rest.Request("GET", route, nil)
   if err != nil {
     return nil, err
@@ -89,3 +112,6 @@ func getPinnedMessages(rest tempest.Rest, channelID string) ([]tempest.Message, 
   return messages, nil
 }
 
+type Channel struct {
+  ID tempest.Snowflake `json:"id"`
+}
