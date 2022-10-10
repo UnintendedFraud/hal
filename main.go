@@ -10,6 +10,10 @@ import (
 	tempest "github.com/Amatsagu/Tempest"
 )
 
+var channelIDs []tempest.Snowflake = []tempest.Snowflake{
+  992760761812258868, // test server
+}
+
 func main() {
   env := getEnvVariables()
 
@@ -32,12 +36,13 @@ func main() {
     },
   }) 
 
+  if err := initialize(client); err != nil {
+    panic(err)
+  }
 
   client.RegisterCommand(commands.Pinned)
 
-  client.SyncCommands([]tempest.Snowflake{
-    992760761812258868, // test server
-  }, nil, false)
+  client.SyncCommands(channelIDs, nil, false)
 
 
   addr := fmt.Sprintf("%s:%s", env.Addr, env.Port)
@@ -47,6 +52,14 @@ func main() {
     panic(err)
   }
 
+}
+
+func initialize(c tempest.Client) error {
+  if err := commands.InitPinned(c, channelIDs); err != nil {
+    return err
+  }
+
+  return nil
 }
 
 func getEnvVariables() Env {

@@ -9,37 +9,68 @@ import (
 	tempest "github.com/Amatsagu/Tempest"
 )
 
-const timeout time.Duration = 10000000000 
+type MessageOfTheDay struct {
+  Date time.Time
+  Message tempest.Message
+}
+
+type PinnedData struct {
+  Messages []tempest.Message
+  Count int
+  MessageOfTheDay *MessageOfTheDay
+}
+
+// not ideal but good enough for this
+var data map[string]*PinnedData = make(map[string]*PinnedData)
+
+func InitPinned(c tempest.Client, channelIDs []tempest.Snowflake) error {
+  for _, cid := range channelIDs {
+    messages, err := getPinnedMessages(c.Rest, cid.String())
+    if err != nil {
+      return err
+    }
+
+    data[cid.String()] = &PinnedData{
+      Messages: messages,
+      Count: len(messages),
+    }
+  }
+
+  return nil
+}
 
 var Pinned tempest.Command = tempest.Command{
   Name: "pinned",
   Description: "will show a random pinned message",
   Options: []tempest.Option{},
   SlashCommandHandler: func(itx tempest.CommandInteraction) {
-
-    _, close := itx.Client.AwaitComponent([]string{itx.Data.CustomId}, timeout)
-
-    messages, err := getPinnedMessages(itx.Client.Rest, itx.ChannelId.String())
-    if err != nil {
-      itx.SendLinearReply(err.Error(), false)
-      return
+    channelData, exist := data[itx.ChannelId.String()]
+    if !exist {
+      itx.SendLinearReply("no data for this channel", false)
     }
 
 
-    messagesCount := len(messages)
-
-    if messagesCount == 0 {
+    if channelData.Count == 0 {
       itx.SendLinearReply("no pinned messages", false)
       return
     }
 
-    idx := rand.Intn(messagesCount) 
+    today := time.Now()
+    todayDate := time.Now().Format("2006/01/02")
+    currentMessageDate := channelData.MessageOfTheDay.Date.Format("2006/01/02")
 
-    if _, err = itx.Client.SendMessage(itx.ChannelId, messages[idx]); err != nil {
-      itx.SendLinearReply(err.Error(), false)
+    if channelData.MessageOfTheDay == nil || todayDate != currentMessageDate {
+      newMessage := channelData.Messages[rand.Intn(channelData.Count)] 
+      
+      channelData.MessageOfTheDay = &MessageOfTheDay{
+        Date: today,
+        Message: newMessage,
+      }
     }
 
-    close()
+    if _, err := itx.Client.SendMessage(itx.ChannelId, channelData.MessageOfTheDay.Message); err != nil {
+      itx.SendLinearReply(err.Error(), false)
+    }
   },
 }
 
