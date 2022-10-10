@@ -39,6 +39,7 @@ func InitPinned(c tempest.Client, serverIDs []tempest.Snowflake) error {
       data[cid.ID.String()] = &PinnedData{
         Messages: messages,
         Count: len(messages),
+        MessageOfTheDay: &MessageOfTheDay{},
       }
     }
   }
