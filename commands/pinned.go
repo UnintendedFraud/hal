@@ -57,6 +57,8 @@ var Pinned tempest.Command = tempest.Command{
       itx.SendLinearReply("no data for this channel", false)
     }
 
+    fmt.Println(channelData)
+
     if channelData.Count == 0 {
       itx.SendLinearReply("no pinned messages", false)
       return
