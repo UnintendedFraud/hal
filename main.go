@@ -73,7 +73,7 @@ func getEnvVariables() Env {
     }
   }
 
-  return LocalEnv
+  return Env{}
 }
 
 
