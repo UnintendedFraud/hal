@@ -76,11 +76,18 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
-    if _, err := itx.Client.SendMessage(itx.ChannelId, channelData.MessageOfTheDay.Message); err != nil {
-      itx.SendLinearReply(err.Error(), false)
+    if err := itx.SendReply(tempest.ResponseData{
+      Content: channelData.MessageOfTheDay.Message.Content,
+      Embeds: channelData.MessageOfTheDay.Message.Embeds,
+      Components: channelData.MessageOfTheDay.Message.Components,
+    }, false); err != nil {
+      itx.SendLinearReply(err.Error(), true)
     }
 
-    itx.SendLinearReply("", true)
+//    if _, err := itx.Client.SendMessage(itx.ChannelId, channelData.MessageOfTheDay.Message); err != nil {
+//      itx.SendLinearReply(err.Error(), false)
+//    }
+
   },
 }
 
