@@ -77,17 +77,12 @@ var Pinned tempest.Command = tempest.Command{
     }
 
     if err := itx.SendReply(tempest.ResponseData{
-      Content: channelData.MessageOfTheDay.Message.Content,
+      //Content: channelData.MessageOfTheDay.Message.Content,
       Embeds: channelData.MessageOfTheDay.Message.Embeds,
-      Components: channelData.MessageOfTheDay.Message.Components,
+      //Components: channelData.MessageOfTheDay.Message.Components,
     }, false); err != nil {
       itx.SendLinearReply(err.Error(), true)
     }
-
-//    if _, err := itx.Client.SendMessage(itx.ChannelId, channelData.MessageOfTheDay.Message); err != nil {
-//      itx.SendLinearReply(err.Error(), false)
-//    }
-
   },
 }
 
