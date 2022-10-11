@@ -76,14 +76,27 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
-    content := fmt.Sprintf("%s - %s", channelData.MessageOfTheDay.Message.Author.Username, channelData.MessageOfTheDay.Message.Content)
+    fmt.Println(channelData.MessageOfTheDay.Date, channelData.MessageOfTheDay.Message.Timestamp)
 
     if err := itx.SendReply(tempest.ResponseData{
-      Content: content,
+      Content: formatMessageContent(channelData.MessageOfTheDay.Message),
     }, false); err != nil {
       itx.SendLinearReply(err.Error(), true)
     }
   },
+}
+
+func formatMessageContent(m tempest.Message) string {
+  return fmt.Sprintf(
+    `
+    par **%s** le %s
+    -
+    %s
+    `,
+    m.Author.Username,
+    m.Timestamp.Format("02/01/2022 15:04"),
+    m.Content,
+  )
 }
 
 func getChannels(rest tempest.Rest, serverID string) ([]Channel, error) {
