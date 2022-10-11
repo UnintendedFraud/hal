@@ -76,8 +76,6 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
-    fmt.Println(channelData.MessageOfTheDay.Date, channelData.MessageOfTheDay.Message.Timestamp)
-
     if err := itx.SendReply(tempest.ResponseData{
       Content: formatMessageContent(channelData.MessageOfTheDay.Message),
     }, false); err != nil {
@@ -89,12 +87,13 @@ var Pinned tempest.Command = tempest.Command{
 func formatMessageContent(m tempest.Message) string {
   return fmt.Sprintf(
     `
+
     par **%s** le %s
     -
     %s
     `,
     m.Author.Username,
-    m.Timestamp.Format("02/01/2022 15:04"),
+    m.Timestamp.Format("02/01/2006 15:04"),
     m.Content,
   )
 }
