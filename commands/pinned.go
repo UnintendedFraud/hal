@@ -76,9 +76,21 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
+    fmt.Println("# message embeds #", len(channelData.MessageOfTheDay.Message.Embeds))
+
+    embed := &tempest.Embed{
+      Title: "Pin of the day",
+      Author: &tempest.EmbedAuthor{
+        Name: channelData.MessageOfTheDay.Message.Author.Username,
+        IconUrl: channelData.MessageOfTheDay.Message.Author.FetchAvatarUrl(),
+      },
+      Timestamp: channelData.MessageOfTheDay.Message.Timestamp,
+      Description: channelData.MessageOfTheDay.Message.Content,
+    }
+
     if err := itx.SendReply(tempest.ResponseData{
       //Content: channelData.MessageOfTheDay.Message.Content,
-      Embeds: channelData.MessageOfTheDay.Message.Embeds,
+      Embeds: []*tempest.Embed{embed},
       //Components: channelData.MessageOfTheDay.Message.Components,
     }, false); err != nil {
       itx.SendLinearReply(err.Error(), true)
