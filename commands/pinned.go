@@ -87,7 +87,7 @@ var Pinned tempest.Command = tempest.Command{
 func formatMessageContent(m tempest.Message) string {
   return fmt.Sprintf(
     `
-
+    >>>
     par **%s** le %s
     -
     %s
