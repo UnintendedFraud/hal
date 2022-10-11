@@ -79,6 +79,8 @@ var Pinned tempest.Command = tempest.Command{
     if _, err := itx.Client.SendMessage(itx.ChannelId, channelData.MessageOfTheDay.Message); err != nil {
       itx.SendLinearReply(err.Error(), false)
     }
+
+    itx.SendLinearReply("", true)
   },
 }
 
