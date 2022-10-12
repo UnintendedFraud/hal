@@ -39,7 +39,7 @@ func main() {
 
   client.RegisterCommand(commands.Pinned)
 
-  client.SyncCommands(serverIDs, nil, false)
+  client.SyncCommands(env.ServerIDs, nil, false)
 
 
   addr := fmt.Sprintf("%s:%s", env.Addr, env.Port)
