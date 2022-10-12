@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
@@ -85,15 +86,14 @@ var Pinned tempest.Command = tempest.Command{
 }
 
 func formatMessageContent(m tempest.Message) string {
-  return fmt.Sprintf(
-    `>>> par **%s** le %s
-    -
-    %s
-    `,
-    m.Author.Username,
-    m.Timestamp.Format("02/01/2006 15:04"),
+  lines := []string{
+    ">>> pin du jour",
+    fmt.Sprintf("par **%s** le %s", m.Author.Username, m.Timestamp.Format("02/01/2006 15:04")),
+    "-",
     m.Content,
-  )
+  }
+
+  return strings.Join(lines, "\n")
 }
 
 func getChannels(rest tempest.Rest, serverID string) ([]Channel, error) {
