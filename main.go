@@ -5,14 +5,11 @@ import (
 	"hal/commands"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
 )
-
-var serverIDs []tempest.Snowflake = []tempest.Snowflake{
-  992760761812258868, // test server
-}
 
 func main() {
   env := getEnvVariables()
@@ -36,7 +33,7 @@ func main() {
     },
   }) 
 
-  if err := initialize(client); err != nil {
+  if err := initialize(client, env.ServerIDs); err != nil {
     panic(err)
   }
 
@@ -54,7 +51,7 @@ func main() {
 
 }
 
-func initialize(c tempest.Client) error {
+func initialize(c tempest.Client, serverIDs []tempest.Snowflake) error {
   if err := commands.InitPinned(c, serverIDs); err != nil {
     return err
   }
@@ -64,12 +61,20 @@ func initialize(c tempest.Client) error {
 
 func getEnvVariables() Env {
   if os.Getenv("RAILWAY_ENVIRONMENT") == "production" {
+    ids := strings.Split(os.Getenv("SERVER_IDS"), ",")
+
+    serverIDs := []tempest.Snowflake{}
+    for _, id := range ids {
+      serverIDs = append(serverIDs, tempest.StringToSnowflake(id)) 
+    }
+
     return Env{
       AppID: tempest.StringToSnowflake(os.Getenv("APP_ID")),
       PublicKey: os.Getenv("PUBLIC_KEY"),
       Token: os.Getenv("TOKEN"),
       Port: "8080",
       Addr: os.Getenv("ADDR"),
+      ServerIDs: serverIDs,
     }
   }
 
@@ -83,4 +88,5 @@ type Env struct {
   Token string
   Port string
   Addr string
+  ServerIDs []tempest.Snowflake
 }

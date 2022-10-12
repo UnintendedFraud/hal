@@ -92,7 +92,6 @@ func formatMessageContent(m tempest.Message) string {
     ">>> **PIN DU JOUR**",
     fmt.Sprintf("par **%s** le %s", m.Author.Username, m.Timestamp.Format("02/01/2006 15:04")),
     m.Content,
-    m.Author.AvatarHash,
   }
 
   return strings.Join(lines, "\n")
