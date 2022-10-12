@@ -78,16 +78,18 @@ var Pinned tempest.Command = tempest.Command{
     }
 
     if err := itx.Client.CrosspostMessage(itx.ChannelId, channelData.MessageOfTheDay.Message.Id); err != nil {
-      fmt.Println("error", err)
+      fmt.Println("error crosspost", err)
       itx.SendLinearReply(err.Error(), true)
     }
 
+    /*
     if err := itx.SendReply(tempest.ResponseData{
       Content: formatMessageContent(channelData.MessageOfTheDay.Message),
     }, false); err != nil {
-      fmt.Println("error", err)
+      fmt.Println("error send reply", err)
       itx.SendLinearReply(err.Error(), true)
     }
+    */
   },
 }
 
