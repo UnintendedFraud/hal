@@ -77,6 +77,10 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
+    if err := itx.Client.CrosspostMessage(channelData.MessageOfTheDay.Message.ChannelId, channelData.MessageOfTheDay.Message.Id); err != nil {
+      itx.SendLinearReply(err.Error(), true)
+    }
+
     if err := itx.SendReply(tempest.ResponseData{
       Content: formatMessageContent(channelData.MessageOfTheDay.Message),
     }, false); err != nil {
@@ -91,7 +95,10 @@ func formatMessageContent(m tempest.Message) string {
     fmt.Sprintf("par **%s** le %s", m.Author.Username, m.Timestamp.Format("02/01/2006 15:04")),
     "-",
     m.Content,
+    m.Author.AvatarHash,
   }
+
+
 
   return strings.Join(lines, "\n")
 }
