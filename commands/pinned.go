@@ -29,16 +29,17 @@ func InitPinned(c tempest.Client, serverIDs []tempest.Snowflake) error {
   for _, sid := range serverIDs {
     channels, err := getChannels(c.Rest, sid.String())
     if err != nil {
-      return err
+      fmt.Println("failed to get the channels for server", sid, err)
+      // return err
     }
 
-    for _, cid := range channels {
-      messages, err := getPinnedMessages(c.Rest, cid.ID.String())
+    for _, channel := range channels {
+      messages, err := getPinnedMessages(c.Rest, channel.ID.String())
       if err != nil {
-        fmt.Println("failed to get the pinned messages for channel", cid, err)
+        fmt.Println("failed to get the pinned messages for channel", channel.ID, err)
       }
 
-      data[cid.ID.String()] = &PinnedData{
+      data[channel.ID.String()] = &PinnedData{
         Messages: messages,
         Count: len(messages),
         MessageOfTheDay: &MessageOfTheDay{},
@@ -131,4 +132,5 @@ func getPinnedMessages(rest tempest.Rest, channelID string) ([]tempest.Message, 
 
 type Channel struct {
   ID tempest.Snowflake `json:"id"`
+  Type int `json:"type"`
 }
