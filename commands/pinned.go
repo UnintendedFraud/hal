@@ -3,6 +3,7 @@ package commands
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
 	"strings"
 	"time"
@@ -77,32 +78,22 @@ var Pinned tempest.Command = tempest.Command{
       }
     }
 
-    if err := itx.Client.CrosspostMessage(itx.ChannelId, channelData.MessageOfTheDay.Message.Id); err != nil {
-      fmt.Println("error crosspost", err)
-      itx.SendLinearReply(err.Error(), true)
-    }
-
-    /*
     if err := itx.SendReply(tempest.ResponseData{
       Content: formatMessageContent(channelData.MessageOfTheDay.Message),
     }, false); err != nil {
-      fmt.Println("error send reply", err)
+      log.Printf("failed to send reply with the pinned message: %s",err.Error())
       itx.SendLinearReply(err.Error(), true)
     }
-    */
   },
 }
 
 func formatMessageContent(m tempest.Message) string {
   lines := []string{
-    ">>> pin du jour",
+    ">>> **PIN DU JOUR**",
     fmt.Sprintf("par **%s** le %s", m.Author.Username, m.Timestamp.Format("02/01/2006 15:04")),
-    "-",
     m.Content,
     m.Author.AvatarHash,
   }
-
-
 
   return strings.Join(lines, "\n")
 }
