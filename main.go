@@ -38,6 +38,7 @@ func main() {
   }
 
   client.RegisterCommand(commands.Pinned)
+  client.RegisterCommand(commands.PsgRefreshFixtures)
 
   client.SyncCommands(env.ServerIDs, nil, false)
 
