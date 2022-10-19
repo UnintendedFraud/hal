@@ -30,7 +30,6 @@ func InitPinned(c tempest.Client, serverIDs []tempest.Snowflake) error {
     channels, err := getChannels(c.Rest, sid.String())
     if err != nil {
       fmt.Println("failed to get the channels for server", sid, err)
-      // return err
     }
 
     for _, channel := range channels {

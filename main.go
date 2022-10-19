@@ -11,7 +11,7 @@ import (
 	tempest "github.com/Amatsagu/Tempest"
 )
 
-func main_old() {
+func main() {
   env := getEnvVariables()
 
   client := tempest.CreateClient(tempest.ClientOptions{
