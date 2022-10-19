@@ -11,7 +11,7 @@ import (
 	tempest "github.com/Amatsagu/Tempest"
 )
 
-func main() {
+func main_old() {
   env := getEnvVariables()
 
   client := tempest.CreateClient(tempest.ClientOptions{
@@ -39,6 +39,7 @@ func main() {
 
   client.RegisterCommand(commands.Pinned)
   client.RegisterCommand(commands.PsgRefreshFixtures)
+  client.RegisterCommand(commands.PsgNextMatch)
 
   client.SyncCommands(env.ServerIDs, nil, false)
 
