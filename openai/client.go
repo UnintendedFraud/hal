@@ -20,7 +20,6 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) Completions(prompt string) (*CompletionResponse, error) {
-	fmt.Println("prompting: ", prompt)
 	body := &CompletionPayload{
 		Model:       "gpt-3.5-turbo",
 		Prompt:      cleanPrompt(prompt),
