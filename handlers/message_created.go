@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"hal/env"
 	"hal/openai"
 	"log"
@@ -10,12 +11,12 @@ import (
 
 func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
-		return
 	}
 
 	if containUser(m.Mentions, s.State.User.ID) {
 		aiclient := openai.NewClient(env.GetEnvVariables().OpenaiHalToken)
 
+		fmt.Println("calling completions with", m.Content)
 		res, err := aiclient.Completions(m.Content)
 		if err != nil {
 			log.Panicf("failed to query open ai with the following prompt [%s]. Error: %s", m.Content, err.Error())
