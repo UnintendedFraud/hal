@@ -19,14 +19,11 @@ func NewClient(token string) *Client {
 	return &Client{HttpClient: httpclient}
 }
 
-func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
-	body := &ChatCompletionPayload{
-		Model: "gpt-3.5-turbo",
-		Messages: []CompletionPayloadMessage{
-			{Role: "system", Content: "You are a fun comedian who only respond in french"},
-			{Role: "user", Content: cleanPrompt(prompt)},
-		},
-		MaxTokens:   50,
+func (c Client) Completions(prompt string) (*CompletionResponse, error) {
+	body := &CompletionPayload{
+		Model:       "gpt-3.5-turbo",
+		Prompt:      cleanPrompt(prompt),
+		MaxTokens:   100,
 		Temperature: 1,
 		N:           1,
 	}
@@ -39,18 +36,10 @@ func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
 	res, err := c.HttpClient.NewRequest().
 		SetHeader("Content-Type", "application/json").
 		SetBody(b).
-		Post("https://api.openai.com/v1/chat/completions")
+		Post("https://api.openai.com/v1/completions")
 	if err != nil {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
-
-	var test interface{}
-	if err := json.Unmarshal(res.Body(), &test); err != nil {
-		return nil, fmt.Errorf("failed to parse the openai test response. Error: %s", err.Error())
-	}
-	fmt.Println()
-	fmt.Println("inteface: ", test)
-	fmt.Println()
 
 	var r CompletionResponse
 	if err := json.Unmarshal(res.Body(), &r); err != nil {
@@ -65,13 +54,13 @@ func cleanPrompt(p string) string {
 	return regex.ReplaceAllString(p, "")
 }
 
-type ChatCompletionPayload struct {
-	Model       string                     `json:"model"`
-	Messages    []CompletionPayloadMessage `json:"messages"`
-	MaxTokens   int                        `json:"max_tokens"`
-	Temperature float32                    `json:"temperature"`
-	TopP        float32                    `json:"top_p"`
-	N           int                        `json:"n"`
+type CompletionPayload struct {
+	Model       string  `json:"model"`
+	Prompt      string  `json:"prompt"`
+	MaxTokens   int     `json:"max_tokens"`
+	Temperature float32 `json:"temperature"`
+	TopP        float32 `json:"top_p"`
+	N           int     `json:"n"`
 }
 
 type CompletionPayloadMessage struct {
