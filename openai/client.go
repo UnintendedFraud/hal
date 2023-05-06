@@ -19,6 +19,7 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
+	fmt.Println("using prompt: ", prompt)
 	body := &ChatCompletionPayload{
 		Model:       "gpt-3.5-turbo",
 		Prompt:      prompt,
@@ -39,6 +40,14 @@ func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
+
+	var test interface{}
+	if err := json.Unmarshal(res.Body(), &test); err != nil {
+		return nil, fmt.Errorf("failed to parse the openai test response. Error: %s", err.Error())
+	}
+	fmt.Println()
+	fmt.Println("inteface: ", test)
+	fmt.Println()
 
 	var r CompletionResponse
 	if err := json.Unmarshal(res.Body(), &r); err != nil {
