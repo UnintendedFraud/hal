@@ -21,7 +21,7 @@ func NewClient(token string) *Client {
 
 func (c Client) Completions(prompt string) (*CompletionResponse, error) {
 	body := &CompletionPayload{
-		Model:       "gpt-3.5-turbo",
+		Model:       "text-davinci-003",
 		Prompt:      cleanPrompt(prompt),
 		MaxTokens:   100,
 		Temperature: 1,

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"hal/env"
 	"hal/openai"
 	"log"
@@ -26,8 +25,6 @@ func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if _, err = s.ChannelMessageSend(m.ChannelID, aiResponse); err != nil {
 				log.Panicf("failed to send the response [%s] to the discord channel [%s]", aiResponse, err.Error())
 			}
-		} else {
-			fmt.Println("### no response ##")
 		}
 
 		return
