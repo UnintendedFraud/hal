@@ -2,7 +2,6 @@ package openai
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/go-resty/resty/v2"
