@@ -41,6 +41,12 @@ func (c Client) Completions(prompt string) (*CompletionResponse, error) {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
 
+	var test interface{}
+	if err := json.Unmarshal(res.Body(), &test); err != nil {
+		return nil, fmt.Errorf("failed to parse the openai response. Error: %s", err.Error())
+	}
+	fmt.Println("### RESPONSE INTERFCE ###", test)
+
 	var r CompletionResponse
 	if err := json.Unmarshal(res.Body(), &r); err != nil {
 		return nil, fmt.Errorf("failed to parse the openai response. Error: %s", err.Error())
