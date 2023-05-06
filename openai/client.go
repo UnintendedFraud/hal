@@ -60,7 +60,7 @@ func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
 }
 
 func cleanPrompt(p string) string {
-	regex := regexp.MustCompile("(<@\d+>)")
+	regex := regexp.MustCompile("<@\\d+>")
 	return regex.ReplaceAllString(p, "")
 }
 
