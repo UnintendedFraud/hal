@@ -9,6 +9,8 @@ import (
 )
 
 func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
+	log.Printf("new message posted: [%s], par [%s]", m.Content, m.Author.Username)
+
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
