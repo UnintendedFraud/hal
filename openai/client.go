@@ -8,7 +8,6 @@ import (
 )
 
 type Client struct {
-	Token      string
 	HttpClient *resty.Client
 }
 
@@ -16,10 +15,7 @@ func NewClient(token string) *Client {
 	httpclient := resty.New()
 	httpclient.SetAuthToken(token)
 
-	return &Client{
-		Token:      token,
-		HttpClient: httpclient,
-	}
+	return &Client{HttpClient: httpclient}
 }
 
 func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
