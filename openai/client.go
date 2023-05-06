@@ -77,7 +77,7 @@ type ChatCompletionPayload struct {
 type CompletionPayloadMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
-	Name    string `json:"name"`
+	Name    string `json:"name,omitempty"`
 }
 
 type CompletionResponse struct {
