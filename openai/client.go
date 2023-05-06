@@ -20,6 +20,7 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) Completions(prompt string) (*CompletionResponse, error) {
+	fmt.Println("prompting: ", prompt)
 	body := &CompletionPayload{
 		Model:       "gpt-3.5-turbo",
 		Prompt:      cleanPrompt(prompt),
@@ -85,12 +86,7 @@ type CompletionUsage struct {
 }
 
 type CompletionChoice struct {
-	Message      CompletionMessage `json:"message"`
-	FinishReason string            `json:"finish_reason"`
-	Index        int               `json:"index"`
-}
-
-type CompletionMessage struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
+	Text         string `json:"text"`
+	FinishReason string `json:"finish_reason"`
+	Index        int    `json:"index"`
 }
