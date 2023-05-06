@@ -20,13 +20,14 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
-	fmt.Println("using prompt: ", prompt, cleanPrompt(prompt))
 	body := &ChatCompletionPayload{
-		Model:       "gpt-3.5-turbo",
-		Messages:    []CompletionPayloadMessage{},
-		Prompt:      cleanPrompt(prompt),
+		Model: "gpt-3.5-turbo",
+		Messages: []CompletionPayloadMessage{
+			{Role: "system", Content: "You are a fun comedian who only respond in french"},
+			{Role: "user", Content: cleanPrompt(prompt)},
+		},
 		MaxTokens:   50,
-		Temperature: 0.2,
+		Temperature: 1,
 		N:           1,
 	}
 
@@ -67,7 +68,6 @@ func cleanPrompt(p string) string {
 type ChatCompletionPayload struct {
 	Model       string                     `json:"model"`
 	Messages    []CompletionPayloadMessage `json:"messages"`
-	Prompt      string                     `json:"prompt"`
 	MaxTokens   int                        `json:"max_tokens"`
 	Temperature float32                    `json:"temperature"`
 	TopP        float32                    `json:"top_p"`
