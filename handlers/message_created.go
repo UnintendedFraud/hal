@@ -22,7 +22,7 @@ func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 		}
 
 		if len(res.Choices) > 0 {
-			aiResponse := res.Choices[0].Message.Content
+			aiResponse := res.Choices[0].Text
 			if _, err = s.ChannelMessageSend(m.ChannelID, aiResponse); err != nil {
 				log.Panicf("failed to send the response [%s] to the discord channel [%s]", aiResponse, err.Error())
 			}
