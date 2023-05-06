@@ -3,6 +3,7 @@ package openai
 import (
 	"encoding/json"
 	"fmt"
+	"regexp"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -19,10 +20,11 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
-	fmt.Println("using prompt: ", prompt)
+	fmt.Println("using prompt: ", prompt, cleanPrompt(prompt))
 	body := &ChatCompletionPayload{
 		Model:       "gpt-3.5-turbo",
-		Prompt:      prompt,
+		Messages:    []CompletionPayloadMessage{},
+		Prompt:      cleanPrompt(prompt),
 		MaxTokens:   50,
 		Temperature: 0.2,
 		N:           1,
@@ -57,20 +59,32 @@ func (c Client) ChatCompletions(prompt string) (*CompletionResponse, error) {
 	return &r, nil
 }
 
+func cleanPrompt(p string) string {
+	regex := regexp.MustCompile("(<@\d+>)")
+	return regex.ReplaceAllString(p, "")
+}
+
 type ChatCompletionPayload struct {
-	Model       string  `json:"model"`
-	Prompt      string  `json:"prompt"`
-	MaxTokens   int     `json:"max_tokens"`
-	Temperature float32 `json:"temperature"`
-	TopP        float32 `json:"top_p"`
-	N           int     `json:"n"`
+	Model       string                     `json:"model"`
+	Messages    []CompletionPayloadMessage `json:"messages"`
+	Prompt      string                     `json:"prompt"`
+	MaxTokens   int                        `json:"max_tokens"`
+	Temperature float32                    `json:"temperature"`
+	TopP        float32                    `json:"top_p"`
+	N           int                        `json:"n"`
+}
+
+type CompletionPayloadMessage struct {
+	Role    string `json:"role"`
+	Content string `json:"content"`
+	Name    string `json:"name"`
 }
 
 type CompletionResponse struct {
-	ID      string             `json:"id`
-	Object  string             `json:"object`
-	Created int64              `json:"created`
-	Model   string             `json:"model`
+	ID      string             `json:"id"`
+	Object  string             `json:"object"`
+	Created int64              `json:"created"`
+	Model   string             `json:"model"`
 	Usage   CompletionUsage    `json:"usage"`
 	Choices []CompletionChoice `json:"choices"`
 }
