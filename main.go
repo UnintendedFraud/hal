@@ -72,7 +72,6 @@ func main() {
 	if err := client.ListenAndServe(addr); err != nil {
 		panic(err)
 	}
-
 }
 
 func initialize(c tempest.Client, serverIDs []tempest.Snowflake) error {

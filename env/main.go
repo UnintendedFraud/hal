@@ -17,10 +17,10 @@ func GetEnvVariables() Env {
 		}
 
 		return Env{
-			AppID:          tempest.StringToSnowflake(os.Getenv("APP_ID")),
-			PublicKey:      os.Getenv("PUBLIC_KEY"),
-			Token:          os.Getenv("TOKEN"),
-			Port:           "8080",
+			AppID:          tempest.StringToSnowflake(os.Getenv("HAL_APP_ID")),
+			PublicKey:      os.Getenv("HAL_PUBLIC_KEY"),
+			Token:          os.Getenv("HAL_TOKEN"),
+			Port:           os.Getenv("PORT"),
 			Addr:           os.Getenv("ADDR"),
 			ServerIDs:      serverIDs,
 			OpenaiHalToken: os.Getenv("OPENAI_HAL"),
