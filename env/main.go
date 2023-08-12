@@ -8,26 +8,22 @@ import (
 )
 
 func GetEnvVariables() Env {
-	if os.Getenv("RAILWAY_ENVIRONMENT") == "production" {
-		ids := strings.Split(os.Getenv("SERVER_IDS"), ",")
+	ids := strings.Split(os.Getenv("DISCORD_SERVER_IDS"), ",")
 
-		serverIDs := []tempest.Snowflake{}
-		for _, id := range ids {
-			serverIDs = append(serverIDs, tempest.StringToSnowflake(id))
-		}
-
-		return Env{
-			AppID:          tempest.StringToSnowflake(os.Getenv("HAL_APP_ID")),
-			PublicKey:      os.Getenv("HAL_PUBLIC_KEY"),
-			Token:          os.Getenv("HAL_TOKEN"),
-			Port:           os.Getenv("PORT"),
-			Addr:           os.Getenv("ADDR"),
-			ServerIDs:      serverIDs,
-			OpenaiHalToken: os.Getenv("OPENAI_HAL"),
-		}
+	serverIDs := []tempest.Snowflake{}
+	for _, id := range ids {
+		serverIDs = append(serverIDs, tempest.StringToSnowflake(id))
 	}
 
-	return Env{}
+	return Env{
+		AppID:          tempest.StringToSnowflake(os.Getenv("HAL_APP_ID")),
+		PublicKey:      os.Getenv("HAL_PUBLIC_KEY"),
+		Token:          os.Getenv("HAL_TOKEN"),
+		Port:           os.Getenv("PORT"),
+		Addr:           os.Getenv("ADDR"),
+		ServerIDs:      serverIDs,
+		OpenaiHalToken: os.Getenv("OPENAI_HAL"),
+	}
 }
 
 type Env struct {

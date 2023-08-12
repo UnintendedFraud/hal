@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println("HAL started")
 	env := env.GetEnvVariables()
 
 	dgclient, err := discordbot.New(env.Token)
