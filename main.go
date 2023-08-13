@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"hal/commands"
 	"hal/env"
-	"hal/handlers"
 	"log"
 	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
-	discordbot "github.com/bwmarrin/discordgo"
+	// discordbot "github.com/bwmarrin/discordgo"
 )
 
 func main() {
@@ -18,19 +17,19 @@ func main() {
 
 	var err error
 
-	dgclient, err := discordbot.New(env.Token)
-	if err != nil {
-		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
-	}
-	defer dgclient.Close()
-
-	dgclient.AddHandler(handlers.OnMessageCreated)
-
-	err = dgclient.Open()
-	if err != nil {
-		fmt.Println("error opening connection,", err)
-		return
-	}
+	// dgclient, err := discordbot.New(env.Token)
+	// if err != nil {
+	// 	panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
+	// }
+	// defer dgclient.Close()
+	//
+	// dgclient.AddHandler(handlers.OnMessageCreated)
+	//
+	// err = dgclient.Open()
+	// if err != nil {
+	// 	fmt.Println("error opening connection,", err)
+	// 	return
+	// }
 
 	client := tempest.CreateClient(tempest.ClientOptions{
 		ApplicationId: env.AppID,
