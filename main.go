@@ -6,6 +6,7 @@ import (
 	"hal/env"
 	"hal/handlers"
 	"log"
+	"os"
 	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
@@ -14,6 +15,7 @@ import (
 
 func main() {
 	fmt.Println("HAL started")
+	fmt.Println(os.Environ())
 	env := env.GetEnvVariables()
 
 	dgclient, err := discordbot.New(env.Token)
