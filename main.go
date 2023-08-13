@@ -15,6 +15,8 @@ func main() {
 	fmt.Println("HAL started")
 	env := env.GetEnvVariables()
 
+	fmt.Println(env)
+
 	var err error
 
 	// dgclient, err := discordbot.New(env.Token)
