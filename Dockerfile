@@ -16,5 +16,5 @@ RUN go build
 EXPOSE 3000
 
 # Specifies the executable command that runs when the container starts
-CMD [ “go run .” ]
+CMD [ "./hal" ]
 
