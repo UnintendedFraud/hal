@@ -6,7 +6,6 @@ import (
 	"hal/env"
 	"hal/handlers"
 	"log"
-	"os"
 	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
@@ -15,12 +14,13 @@ import (
 
 func main() {
 	fmt.Println("HAL started")
-	fmt.Println(os.Environ())
 	env := env.GetEnvVariables()
 
-	dgclient, err := discordbot.New(env.Token)
+	var err error
+
+	dgclient, err := discordbot.New(fmt.Sprintf("Bot %s", env.Token))
 	if err != nil {
-		panic(err)
+		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
 	}
 	defer dgclient.Close()
 
