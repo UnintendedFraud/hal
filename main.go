@@ -20,7 +20,8 @@ func main() {
 
 	fmt.Println("env: ", env)
 
-	dgclient, err := discordbot.New("Bot " + env.Token)
+	discordToken := fmt.Sprintf("Bot %s", env.Token)
+	dgclient, err := discordbot.New(discordToken)
 	if err != nil {
 		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
 	}
@@ -37,7 +38,7 @@ func main() {
 	client := tempest.CreateClient(tempest.ClientOptions{
 		ApplicationId: env.AppID,
 		PublicKey:     env.PublicKey,
-		Token:         env.Token,
+		Token:         discordToken,
 		PreCommandExecutionHandler: func(itx tempest.CommandInteraction) *tempest.ResponseData {
 			log.Printf("running [%s] slash command", itx.Data.Name)
 			return nil
