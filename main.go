@@ -2,11 +2,9 @@ package main
 
 import (
 	"fmt"
-	"hal/commands"
 	"hal/env"
 	"hal/handlers"
 
-	tempest "github.com/Amatsagu/Tempest"
 	discordbot "github.com/bwmarrin/discordgo"
 )
 
@@ -23,7 +21,6 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
 	}
-	defer dgclient.Close()
 
 	dgclient.AddHandler(handlers.OnMessageCreated)
 
@@ -32,12 +29,15 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
-}
 
-func initialize(c tempest.Client, serverIDs []tempest.Snowflake) error {
-	if err := commands.InitPinned(c, serverIDs); err != nil {
-		return err
-	}
+	fmt.Println("before .Close")
+	dgclient.Close()
 
-	return nil
+	fmt.Println("after .Close")
+	// addr := fmt.Sprintf(":%s", env.Port)
+	// fmt.Println("starting server at", addr)
+	//
+	// if err := http.ListenAndServe(addr); err != nil {
+	// 	panic(err)
+	// }
 }
