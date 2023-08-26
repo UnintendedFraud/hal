@@ -72,7 +72,7 @@ func main() {
 		panic(err)
 	}
 
-	addr := fmt.Sprintf("%s:%s", env.Addr, env.Port)
+	addr := fmt.Sprintf("https://%s:%s", env.Addr, env.Port)
 	fmt.Println("starting server at", addr)
 
 	if err := client.ListenAndServe(addr); err != nil {
