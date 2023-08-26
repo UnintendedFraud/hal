@@ -18,9 +18,9 @@ func main() {
 
 	var err error
 
-	fmt.Println("Token: ", env.Token)
+	fmt.Println("env: ", env)
 
-	dgclient, err := discordbot.New(env.Token)
+	dgclient, err := discordbot.New("Bot " + env.Token)
 	if err != nil {
 		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
 	}
