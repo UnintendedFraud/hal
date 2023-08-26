@@ -5,8 +5,6 @@ import (
 	"hal/commands"
 	"hal/env"
 	"hal/handlers"
-	"log"
-	"time"
 
 	tempest "github.com/Amatsagu/Tempest"
 	discordbot "github.com/bwmarrin/discordgo"
@@ -33,50 +31,6 @@ func main() {
 	if err != nil {
 		fmt.Println("error opening connection,", err)
 		return
-	}
-
-	client := tempest.CreateClient(tempest.ClientOptions{
-		ApplicationId: env.AppID,
-		PublicKey:     env.PublicKey,
-		Token:         discordToken,
-		PreCommandExecutionHandler: func(itx tempest.CommandInteraction) *tempest.ResponseData {
-			log.Printf("running [%s] slash command", itx.Data.Name)
-			return nil
-		},
-		Cooldowns: &tempest.ClientCooldownOptions{
-			Duration:  5 * time.Second,
-			Ephemeral: true,
-			CooldownResponse: func(user tempest.User, timeLeft time.Duration) tempest.ResponseData {
-				return tempest.ResponseData{
-					Content: fmt.Sprintf("stop spamming, try again in %.2fs", timeLeft.Seconds()),
-				}
-			},
-		},
-	})
-
-	if err = initialize(client, env.ServerIDs); err != nil {
-		panic(err)
-	}
-
-	if err = client.RegisterCommand(commands.Pinned); err != nil {
-		panic(err)
-	}
-	if err = client.RegisterCommand(commands.PsgRefreshFixtures); err != nil {
-		panic(err)
-	}
-	if err = client.RegisterCommand(commands.PsgNextMatch); err != nil {
-		panic(err)
-	}
-
-	if err = client.SyncCommands(env.ServerIDs, nil, false); err != nil {
-		panic(err)
-	}
-
-	addr := fmt.Sprintf(":%s", env.Port)
-	fmt.Println("starting server at", addr)
-
-	if err := client.ListenAndServe(addr); err != nil {
-		panic(err)
 	}
 }
 
