@@ -13,7 +13,7 @@ RUN go mod download
 RUN go build 
 
 # Tells Docker which network port your container listens on
-EXPOSE 3000
+EXPOSE 3333
 
 # Specifies the executable command that runs when the container starts
 CMD [ "./hal" ]
