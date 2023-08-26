@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"hal/env"
 	"hal/handlers"
+	"os"
+	"os/signal"
+	"syscall"
 
 	discordbot "github.com/bwmarrin/discordgo"
 )
@@ -31,6 +34,13 @@ func main() {
 	}
 
 	fmt.Println("before .Close")
+
+	// Wait here until CTRL-C or other term signal is received.
+	fmt.Println("Bot is now running.  Press CTRL-C to exit.")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	<-sc
+
 	dgclient.Close()
 
 	fmt.Println("after .Close")
