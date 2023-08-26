@@ -10,16 +10,18 @@ import (
 )
 
 func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fmt.Printf("\nmessage received: [%s]", m.Message.Content)
+	fmt.Printf("\nmessage received 1: [%s]", m.Message.Content)
 
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
 	if containUser(m.Mentions, s.State.User.ID) {
-		fmt.Printf("\nmessage received: [%s]", m.Message.Content)
+		fmt.Printf("\nmessage received 2: [%s]", m.Message.Content)
 
 		aiclient := openai.NewClient(env.GetEnvVariables().OpenaiHalToken)
+
+		fmt.Printf("\nAfter openai client: %+v", aiclient)
 
 		res, err := aiclient.Completions(m.Content)
 		if err != nil {
