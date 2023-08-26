@@ -17,8 +17,6 @@ func main() {
 
 	var err error
 
-	fmt.Println("env: ", env)
-
 	discordToken := fmt.Sprintf("Bot %s", env.Token)
 	dgclient, err := discordbot.New(discordToken)
 	if err != nil {

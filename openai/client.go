@@ -20,7 +20,6 @@ func NewClient(token string) *Client {
 }
 
 func (c Client) Completions(prompt string) (*CompletionResponse, error) {
-	fmt.Printf("\ncompletions: %s", prompt)
 	body := &CompletionPayload{
 		Model:       "text-davinci-003",
 		Prompt:      cleanPrompt(prompt),
@@ -34,8 +33,6 @@ func (c Client) Completions(prompt string) (*CompletionResponse, error) {
 		return nil, fmt.Errorf("failed to marshal the payload. %s", err.Error())
 	}
 
-	fmt.Printf("\nsend request to openai")
-
 	res, err := c.HttpClient.NewRequest().
 		SetHeader("Content-Type", "application/json").
 		SetBody(b).
@@ -43,8 +40,6 @@ func (c Client) Completions(prompt string) (*CompletionResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
-
-	fmt.Printf("\nreceived openai response: %+v", res.StatusCode())
 
 	var r CompletionResponse
 	if err := json.Unmarshal(res.Body(), &r); err != nil {
