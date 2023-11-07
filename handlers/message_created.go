@@ -16,14 +16,23 @@ var messagesHistory = []*openai.ChatMessage{}
 func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	isHal := m.Author.ID == s.State.User.ID
 
+	fmt.Println("message received: ", m.Message.Content)
+
 	addMessageToHistory(m.Message, isHal)
+
+	fmt.Println("added message to history", len(messagesHistory))
 
 	if isHal {
 		return
 	}
 
+	fmt.Println("check contains user")
+
 	if containUser(m.Mentions, s.State.User.ID) {
+		fmt.Println("lets go")
 		aiclient := openai.NewClient(env.GetEnvVariables().OpenaiHalToken)
+
+		fmt.Println("client created")
 
 		res, err := aiclient.Chat(messagesHistory)
 		if err != nil {
@@ -40,8 +49,8 @@ func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			aiResponse := res.Choices[0].Message.Content
 			sendResponse(s, m.ChannelID, aiResponse)
 		}
-
-		return
+	} else {
+		fmt.Println("hal not mentioned")
 	}
 }
 
