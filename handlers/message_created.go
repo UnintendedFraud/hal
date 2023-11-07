@@ -45,6 +45,8 @@ func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 			log.Panicf("failed to query open ai with the following prompt [%s]. Error: %s", m.Content, err.Error())
 		}
 
+		fmt.Println("Choices: ", res.Choices)
+
 		if len(res.Choices) > 0 {
 			aiResponse := res.Choices[0].Message.Content
 			sendResponse(s, m.ChannelID, aiResponse)

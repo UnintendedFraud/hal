@@ -41,6 +41,15 @@ func (c Client) Chat(messages []*ChatMessage) (*ChatResponse, error) {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
 
+	var test interface{}
+	if err := json.Unmarshal(res.Body(), &test); err != nil {
+		fmt.Println("ERROR: ", err.Error())
+	}
+
+	fmt.Println("Parsing response in interface:")
+	indent, _ := json.MarshalIndent(test, "\n", " ")
+	fmt.Printf("\n%+v\n", indent)
+
 	var r ChatResponse
 	if err := json.Unmarshal(res.Body(), &r); err != nil {
 		return nil, fmt.Errorf("failed to parse the openai response. Error: %s", err.Error())
