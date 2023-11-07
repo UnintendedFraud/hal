@@ -5,6 +5,7 @@ import (
 	"hal/env"
 	"hal/openai"
 	"log"
+	"regexp"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -53,12 +54,17 @@ func addMessageToHistory(m *discordgo.Message, isHal bool) {
 
 	messagesHistory = append(messagesHistory, &openai.ChatMessage{
 		Role:    role,
-		Content: m.Content,
+		Content: cleanMessage(m.Content),
 	})
 
 	if len(messagesHistory) > MAX_HISTORY {
 		messagesHistory = messagesHistory[1:]
 	}
+}
+
+func cleanMessage(p string) string {
+	regex := regexp.MustCompile(`<@\d+>`)
+	return regex.ReplaceAllString(p, "")
 }
 
 func sendResponse(s *discordgo.Session, channelID string, response string) {
