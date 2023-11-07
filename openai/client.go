@@ -40,6 +40,9 @@ func (c Client) Chat(messages []*ChatMessage) (*ChatResponse, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to query openai. Error: %s", err.Error())
 	}
+	if res.IsError() {
+		return nil, fmt.Errorf("openai return [%d]: %s", res.StatusCode(), res.Error())
+	}
 
 	fmt.Println("body response: ", string(res.Body()), res.Status())
 
@@ -101,7 +104,7 @@ type ChatResponseChoiceMessage struct {
 
 type ChatPayload struct {
 	Messages  []*ChatMessage `json:"messages"`
-	Model     string         `json:"string"`
+	Model     string         `json:"model"`
 	MaxTokens int            `json:"max_tokens"`
 }
 
