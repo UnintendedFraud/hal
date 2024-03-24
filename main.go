@@ -17,13 +17,15 @@ func main() {
 
 	var err error
 
+	handler := handlers.Init(env.OpenaiHalToken)
+
 	discordToken := fmt.Sprintf("Bot %s", env.Token)
 	dgclient, err := discordbot.New(discordToken)
 	if err != nil {
 		panic(fmt.Errorf("failed to create discord client: %s", err.Error()))
 	}
 
-	dgclient.AddHandler(handlers.OnMessageCreated)
+	dgclient.AddHandler(handler.OnMessageCreated)
 
 	err = dgclient.Open()
 	if err != nil {

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"hal/env"
 	"hal/openai"
 	"log"
 	"regexp"
@@ -14,7 +13,17 @@ const MAX_HISTORY = 50
 
 var messagesHistory = []*openai.ChatMessage{}
 
-func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
+type Handler struct {
+	client *openai.Client
+}
+
+func Init(token string) Handler {
+	return Handler{
+		client: openai.NewClient(token),
+	}
+}
+
+func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	isHal := m.Author.ID == s.State.User.ID
 
 	addMessageToHistory(m.Message, isHal)
@@ -24,9 +33,7 @@ func OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if containUser(m.Mentions, s.State.User.ID) {
-		aiclient := openai.NewClient(env.GetEnvVariables().OpenaiHalToken)
-
-		res, err := aiclient.Chat(messagesHistory)
+		res, err := h.client.Chat(messagesHistory)
 		if err != nil {
 			sendResponse(
 				s,
