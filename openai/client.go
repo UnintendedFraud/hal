@@ -23,7 +23,7 @@ func NewClient(token string) *Client {
 func (c Client) Chat(messages []*ChatMessage) (*ChatResponse, error) {
 	body := &ChatPayload{
 		Messages:  messages,
-		Model:     "gpt-4-1106-preview",
+		Model:     "gpt-4",
 		MaxTokens: MAX_TOKENS,
 	}
 
