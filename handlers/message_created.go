@@ -41,7 +41,8 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 				fmt.Sprintf("X_X: %s", err.Error()),
 			)
 
-			log.Panicf("failed to query open ai with the following prompt [%s]. Error: %s", m.Content, err.Error())
+			log.Printf("\nfailed to query open ai with the following prompt [%s]. Error: %s", m.Content, err.Error())
+			return
 		}
 
 		if len(res.Choices) > 0 {
@@ -76,7 +77,7 @@ func cleanMessage(p string) string {
 
 func sendResponse(s *discordgo.Session, channelID string, response string) {
 	if _, err := s.ChannelMessageSend(channelID, response); err != nil {
-		log.Panicf("failed to send the response [%s] to the discord channel [%s]", response, err.Error())
+		log.Printf("\nfailed to send the response [%s] to the discord channel [%s]", response, err.Error())
 	}
 }
 
