@@ -86,7 +86,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 	}
 }
 
-func (h Handler) addMessageToHistory(m *discordgo.Message, isHal bool) {
+func (h *Handler) addMessageToHistory(m *discordgo.Message, isHal bool) {
 	var role string
 	if isHal {
 		role = "system"
@@ -125,7 +125,7 @@ func containHal(users []*discordgo.User, userID string) bool {
 	return false
 }
 
-func (h Handler) updateUserHistoryCount(userID string) bool {
+func (h *Handler) updateUserHistoryCount(userID string) bool {
 	now := time.Now()
 
 	u, ok := h.usersHistoryCount[userID]
