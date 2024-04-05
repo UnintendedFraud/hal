@@ -53,13 +53,15 @@ func Init(token string) Handler {
 func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	isHal := m.Author.ID == s.State.User.ID
 
-	h.addMessageToHistory(m.Message, isHal)
+	h.messagesHistory = h.addMessageToHistory(m.Message, isHal)
 
 	if isHal || !containHal(m.Mentions, s.State.User.ID) {
 		return
 	}
 
-	userSpamTooMuch := h.updateUserHistoryCount(m.Author.ID)
+	var userSpamTooMuch bool
+
+	h.usersHistoryCount, userSpamTooMuch = h.updateUserHistoryCount(m.Author.ID)
 
 	if userSpamTooMuch {
 		sendResponse(s, m.ChannelID, getRandomSpam())
@@ -86,7 +88,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 	}
 }
 
-func (h *Handler) addMessageToHistory(m *discordgo.Message, isHal bool) {
+func (h Handler) addMessageToHistory(m *discordgo.Message, isHal bool) []*openai.ChatMessage {
 	var role string
 	if isHal {
 		role = "system"
@@ -102,6 +104,8 @@ func (h *Handler) addMessageToHistory(m *discordgo.Message, isHal bool) {
 	if len(h.messagesHistory) > MAX_HISTORY {
 		h.messagesHistory = h.messagesHistory[1:]
 	}
+
+	return h.messagesHistory
 }
 
 func cleanMessage(p string) string {
@@ -125,7 +129,7 @@ func containHal(users []*discordgo.User, userID string) bool {
 	return false
 }
 
-func (h *Handler) updateUserHistoryCount(userID string) bool {
+func (h Handler) updateUserHistoryCount(userID string) (map[string]userHistoryCount, bool) {
 	now := time.Now()
 
 	u, ok := h.usersHistoryCount[userID]
@@ -135,13 +139,13 @@ func (h *Handler) updateUserHistoryCount(userID string) bool {
 			count: 1,
 		}
 
-		return false
+		return h.usersHistoryCount, false
 	}
 
 	u.count++
 
 	if now.Before(u.bannedUntilAt) {
-		return true
+		return h.usersHistoryCount, true
 	}
 
 	if !u.bannedUntilAt.IsZero() {
@@ -151,15 +155,15 @@ func (h *Handler) updateUserHistoryCount(userID string) bool {
 	if u.date.Add(SPAM_PERIOD).After(now) {
 		u.count = 1
 		u.date = now
-		return false
+		return h.usersHistoryCount, false
 	}
 
 	if u.count > 5 {
 		u.bannedUntilAt = now.Add(2 * time.Minute)
-		return true
+		return h.usersHistoryCount, true
 	}
 
-	return false
+	return h.usersHistoryCount, false
 }
 
 func getRandomSpam() string {
