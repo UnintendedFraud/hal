@@ -13,7 +13,7 @@ import (
 
 const MAX_HISTORY = 50
 
-const SPAM_PERIOD = 5 * time.Minute
+const SPAM_PERIOD = 1 * time.Minute
 
 var spams = []string{
 	":GroGroDebile:",
@@ -63,6 +63,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 
 	if userSpamTooMuch {
 		sendResponse(s, m.ChannelID, getRandomSpam())
+		return
 	}
 
 	for id, u := range usersHistoryCount {
@@ -135,7 +136,6 @@ func updateUserHistoryCount(userID string) bool {
 
 	u, ok := usersHistoryCount[userID]
 	if !ok {
-		fmt.Println("user does not exist")
 		usersHistoryCount[userID] = &userHistoryCount{
 			date:  now,
 			count: 1,
@@ -152,16 +152,16 @@ func updateUserHistoryCount(userID string) bool {
 
 	if !u.bannedUntilAt.IsZero() {
 		u.bannedUntilAt = time.Time{}
+		u.count = 1
 	}
 
 	if u.date.Add(SPAM_PERIOD).Before(now) {
-		fmt.Println("date after spam period")
 		u.count = 1
 		u.date = now
 		return false
 	}
 
-	if u.count > 5 {
+	if u.count > 2 {
 		u.bannedUntilAt = now.Add(2 * time.Minute)
 		return true
 	}
