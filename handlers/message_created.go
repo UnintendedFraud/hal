@@ -26,6 +26,10 @@ var spams = []string{
 	":soxx:",
 }
 
+var messagesHistory []*openai.ChatMessage = []*openai.ChatMessage{}
+
+var usersHistoryCount map[string]userHistoryCount = map[string]userHistoryCount{}
+
 type userHistoryCount struct {
 	date          time.Time
 	bannedUntilAt time.Time
@@ -33,18 +37,12 @@ type userHistoryCount struct {
 }
 
 type Handler struct {
-	messagesHistory   []*openai.ChatMessage
-	usersHistoryCount map[string]userHistoryCount
-
 	client *openai.Client
 }
 
 func Init(token string) Handler {
 	return Handler{
 		client: openai.NewClient(token),
-
-		messagesHistory:   []*openai.ChatMessage{},
-		usersHistoryCount: map[string]userHistoryCount{},
 	}
 }
 
@@ -53,7 +51,7 @@ func Init(token string) Handler {
 func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	isHal := m.Author.ID == s.State.User.ID
 
-	h.messagesHistory = h.addMessageToHistory(m.Message, isHal)
+	addMessageToHistory(m.Message, isHal)
 
 	if isHal || !containHal(m.Mentions, s.State.User.ID) {
 		return
@@ -61,14 +59,14 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 
 	var userSpamTooMuch bool
 
-	h.usersHistoryCount, userSpamTooMuch = h.updateUserHistoryCount(m.Author.ID)
+	userSpamTooMuch = updateUserHistoryCount(m.Author.ID)
 
 	if userSpamTooMuch {
 		sendResponse(s, m.ChannelID, getRandomSpam())
 	}
 
-	fmt.Println(h.messagesHistory)
-	res, err := h.client.Chat(h.messagesHistory)
+	fmt.Println(messagesHistory)
+	res, err := h.client.Chat(messagesHistory)
 	if err != nil {
 		sendResponse(
 			s,
@@ -88,7 +86,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 	}
 }
 
-func (h Handler) addMessageToHistory(m *discordgo.Message, isHal bool) []*openai.ChatMessage {
+func addMessageToHistory(m *discordgo.Message, isHal bool) []*openai.ChatMessage {
 	var role string
 	if isHal {
 		role = "system"
@@ -96,16 +94,16 @@ func (h Handler) addMessageToHistory(m *discordgo.Message, isHal bool) []*openai
 		role = "user"
 	}
 
-	h.messagesHistory = append(h.messagesHistory, &openai.ChatMessage{
+	messagesHistory = append(messagesHistory, &openai.ChatMessage{
 		Role:    role,
 		Content: cleanMessage(m.Content),
 	})
 
-	if len(h.messagesHistory) > MAX_HISTORY {
-		h.messagesHistory = h.messagesHistory[1:]
+	if len(messagesHistory) > MAX_HISTORY {
+		messagesHistory = messagesHistory[1:]
 	}
 
-	return h.messagesHistory
+	return messagesHistory
 }
 
 func cleanMessage(p string) string {
@@ -129,23 +127,23 @@ func containHal(users []*discordgo.User, userID string) bool {
 	return false
 }
 
-func (h Handler) updateUserHistoryCount(userID string) (map[string]userHistoryCount, bool) {
+func updateUserHistoryCount(userID string) bool {
 	now := time.Now()
 
-	u, ok := h.usersHistoryCount[userID]
+	u, ok := usersHistoryCount[userID]
 	if !ok {
-		h.usersHistoryCount[userID] = userHistoryCount{
+		usersHistoryCount[userID] = userHistoryCount{
 			date:  now,
 			count: 1,
 		}
 
-		return h.usersHistoryCount, false
+		return false
 	}
 
 	u.count++
 
 	if now.Before(u.bannedUntilAt) {
-		return h.usersHistoryCount, true
+		return true
 	}
 
 	if !u.bannedUntilAt.IsZero() {
@@ -155,15 +153,15 @@ func (h Handler) updateUserHistoryCount(userID string) (map[string]userHistoryCo
 	if u.date.Add(SPAM_PERIOD).After(now) {
 		u.count = 1
 		u.date = now
-		return h.usersHistoryCount, false
+		return false
 	}
 
 	if u.count > 5 {
 		u.bannedUntilAt = now.Add(2 * time.Minute)
-		return h.usersHistoryCount, true
+		return true
 	}
 
-	return h.usersHistoryCount, false
+	return false
 }
 
 func getRandomSpam() string {
