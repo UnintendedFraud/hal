@@ -28,7 +28,7 @@ var spams = []string{
 
 var messagesHistory []*openai.ChatMessage = []*openai.ChatMessage{}
 
-var usersHistoryCount map[string]userHistoryCount = map[string]userHistoryCount{}
+var usersHistoryCount map[string]*userHistoryCount = map[string]*userHistoryCount{}
 
 type userHistoryCount struct {
 	date          time.Time
@@ -135,7 +135,7 @@ func updateUserHistoryCount(userID string) bool {
 
 	u, ok := usersHistoryCount[userID]
 	if !ok {
-		usersHistoryCount[userID] = userHistoryCount{
+		usersHistoryCount[userID] = &userHistoryCount{
 			date:  now,
 			count: 1,
 		}
