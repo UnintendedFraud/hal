@@ -143,24 +143,24 @@ func updateUserHistoryCount(userID string) bool {
 		return false
 	}
 
-	u.count++
+	usersHistoryCount[userID].count++
 
 	if now.Before(u.bannedUntilAt) {
 		return true
 	}
 
 	if !u.bannedUntilAt.IsZero() {
-		u.bannedUntilAt = time.Time{}
+		usersHistoryCount[userID].bannedUntilAt = time.Time{}
 	}
 
 	if u.date.Add(SPAM_PERIOD).After(now) {
-		u.count = 1
-		u.date = now
+		usersHistoryCount[userID].count = 1
+		usersHistoryCount[userID].date = now
 		return false
 	}
 
 	if u.count > 5 {
-		u.bannedUntilAt = now.Add(2 * time.Minute)
+		usersHistoryCount[userID].bannedUntilAt = now.Add(2 * time.Minute)
 		return true
 	}
 
