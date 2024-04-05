@@ -135,6 +135,7 @@ func updateUserHistoryCount(userID string) bool {
 
 	u, ok := usersHistoryCount[userID]
 	if !ok {
+		fmt.Println("user does not exist")
 		usersHistoryCount[userID] = &userHistoryCount{
 			date:  now,
 			count: 1,
@@ -143,24 +144,25 @@ func updateUserHistoryCount(userID string) bool {
 		return false
 	}
 
-	usersHistoryCount[userID].count++
+	u.count++
 
 	if now.Before(u.bannedUntilAt) {
 		return true
 	}
 
 	if !u.bannedUntilAt.IsZero() {
-		usersHistoryCount[userID].bannedUntilAt = time.Time{}
+		u.bannedUntilAt = time.Time{}
 	}
 
-	if u.date.Add(SPAM_PERIOD).After(now) {
-		usersHistoryCount[userID].count = 1
-		usersHistoryCount[userID].date = now
+	if u.date.Add(SPAM_PERIOD).Before(now) {
+		fmt.Println("date after spam period")
+		u.count = 1
+		u.date = now
 		return false
 	}
 
 	if u.count > 5 {
-		usersHistoryCount[userID].bannedUntilAt = now.Add(2 * time.Minute)
+		u.bannedUntilAt = now.Add(2 * time.Minute)
 		return true
 	}
 
