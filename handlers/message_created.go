@@ -65,6 +65,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		sendResponse(s, m.ChannelID, getRandomSpam())
 	}
 
+	fmt.Println(h.messagesHistory)
 	res, err := h.client.Chat(h.messagesHistory)
 	if err != nil {
 		sendResponse(
