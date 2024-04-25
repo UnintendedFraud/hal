@@ -2,18 +2,22 @@ package handlers
 
 import (
 	"fmt"
-	"hal/openai"
 	"log"
 	"math/rand"
 	"regexp"
 	"time"
+
+	"hal/openai"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 const MAX_HISTORY = 50
 
-const SPAM_PERIOD = 5 * time.Minute
+const (
+	SPAM_PERIOD         = 5 * time.Minute
+	MESSAGES_PER_PERIOD = 10
+)
 
 var spams = []string{
 	":GroGroDebile:",
@@ -57,9 +61,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		return
 	}
 
-	var userSpamTooMuch bool
-
-	userSpamTooMuch = updateUserHistoryCount(m.Author.ID)
+	userSpamTooMuch := updateUserHistoryCount(m.Author.ID)
 
 	if userSpamTooMuch {
 		sendResponse(s, m.ChannelID, getRandomSpam())
@@ -157,7 +159,7 @@ func updateUserHistoryCount(userID string) bool {
 		return false
 	}
 
-	if u.count > 2 {
+	if u.count > MESSAGES_PER_PERIOD {
 		u.bannedUntilAt = now.Add(30 * time.Minute)
 		return true
 	}
