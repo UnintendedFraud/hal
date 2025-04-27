@@ -24,6 +24,7 @@ func NewClient(token string) *Client {
 	}
 
 	return &Client{
+		ctx:   ctx,
 		c:     gClient,
 		model: "gemini-2.5-pro-exp-03-25",
 	}
