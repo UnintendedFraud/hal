@@ -7,9 +7,11 @@ import (
 	"regexp"
 	"time"
 
+	"hal/gemini"
 	"hal/openai"
 
 	"github.com/bwmarrin/discordgo"
+	"google.golang.org/genai"
 )
 
 const MAX_HISTORY = 50
@@ -20,17 +22,15 @@ const (
 )
 
 var spams = []string{
-	":GroGroDebile:",
 	"Arrête de spam putain!",
 	"Wesh...",
-	"...",
 	"Flemme.",
 	"Laisse-moi tranquille!",
 	"Fdr",
-	":soxx:",
 }
 
-var messagesHistory []*openai.ChatMessage = []*openai.ChatMessage{}
+// messagesHistory []*openai.ChatMessage = []*openai.ChatMessage{}
+var geminiHistory []*genai.Content = []*genai.Content{}
 
 var usersHistoryCount map[string]*userHistoryCount = map[string]*userHistoryCount{}
 
@@ -41,12 +41,14 @@ type userHistoryCount struct {
 }
 
 type Handler struct {
-	client *openai.Client
+	openaiClient *openai.Client
+	geminiClient *gemini.Client
 }
 
-func Init(token string) Handler {
+func Init(openaiToken string, geminiToken string) Handler {
 	return Handler{
-		client: openai.NewClient(token),
+		openaiClient: openai.NewClient(openaiToken),
+		geminiClient: gemini.NewClient(geminiToken),
 	}
 }
 
@@ -68,7 +70,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		return
 	}
 
-	res, err := h.client.Chat(messagesHistory)
+	llmRes, err := h.geminiClient.GenerateContent(geminiHistory)
 	if err != nil {
 		sendResponse(
 			s,
@@ -76,36 +78,33 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 			fmt.Sprintf("X_X: %s", err.Error()),
 		)
 
-		log.Printf("\nfailed to query open ai with the following prompt [%s]. Error: %s", m.Content, err.Error())
+		log.Printf("\nfailed to query the llm with the following prompt [%s]. Error: %s", m.Content, err.Error())
 		return
 	}
 
-	if len(res.Choices) > 0 {
-		aiResponse := res.Choices[0].Message.Content
-		sendResponse(s, m.ChannelID, aiResponse)
-	} else {
-		sendResponse(s, m.ChannelID, "la fatigue")
-	}
+	sendResponse(s, m.ChannelID, llmRes.Text())
 }
 
-func addMessageToHistory(m *discordgo.Message, isHal bool) []*openai.ChatMessage {
+func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
 	var role string
 	if isHal {
-		role = "system"
+		role = "model"
 	} else {
 		role = "user"
 	}
 
-	messagesHistory = append(messagesHistory, &openai.ChatMessage{
-		Role:    role,
-		Content: cleanMessage(m.Content),
+	geminiHistory = append(geminiHistory, &genai.Content{
+		Role: role,
+		Parts: []*genai.Part{
+			genai.NewPartFromText(cleanMessage(m.Content)),
+		},
 	})
 
-	if len(messagesHistory) > MAX_HISTORY {
-		messagesHistory = messagesHistory[1:]
+	if len(geminiHistory) > MAX_HISTORY {
+		geminiHistory = geminiHistory[1:]
 	}
 
-	return messagesHistory
+	return geminiHistory
 }
 
 func cleanMessage(p string) string {

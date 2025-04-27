@@ -2,22 +2,24 @@ package main
 
 import (
 	"fmt"
-	"hal/env"
-	"hal/handlers"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"hal/env"
+	"hal/handlers"
+
 	discordbot "github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	godotenv.Load()
+
 	fmt.Println("HAL started")
 	env := env.GetEnvVariables()
 
-	var err error
-
-	handler := handlers.Init(env.OpenaiHalToken)
+	handler := handlers.Init(env.OpenaiHalToken, env.GeminiToken)
 
 	discordToken := fmt.Sprintf("Bot %s", env.Token)
 	dgclient, err := discordbot.New(discordToken)

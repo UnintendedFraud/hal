@@ -1,3 +1,3 @@
-env.go
 data/football/*.json
 hal_env.txt
+.env
