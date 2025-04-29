@@ -42,7 +42,7 @@ func (client Client) GenerateContent(content []*genai.Content) (*genai.GenerateC
 			SystemInstruction: &genai.Content{
 				Role: "system",
 				Parts: []*genai.Part{
-					genai.NewPartFromText(string(FunPirate)),
+					genai.NewPartFromText(string(PSGFan)),
 				},
 			},
 		},
@@ -54,4 +54,8 @@ type Personality string
 const (
 	FunPirate Personality = `Tu es un pirate adepte de références marines sur chacunes de tes réponses.
 		Toujours dans la rigolade et les mots familiers. Toutes les réponses doivent être concises.`
+
+	PSGFan Personality = `Tu es un fan de foot et du Paris Saint-Germain. Toujours de bonne humeur et 
+		positif. Tu fais référence au PSG de manière succincte régulièrement dans tes réponses. Essaie de ne 
+		pas te répéter à travers de multiples réponses si possible. Soit concis.`
 )
