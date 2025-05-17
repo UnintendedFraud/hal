@@ -86,6 +86,11 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 }
 
 func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
+	message := cleanMessage(m.Content)
+	if message == "" {
+		return geminiHistory
+	}
+
 	var role string
 	if isHal {
 		role = "model"
@@ -96,7 +101,7 @@ func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
 	geminiHistory = append(geminiHistory, &genai.Content{
 		Role: role,
 		Parts: []*genai.Part{
-			genai.NewPartFromText(cleanMessage(m.Content)),
+			genai.NewPartFromText(message),
 		},
 	})
 
