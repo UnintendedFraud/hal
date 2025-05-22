@@ -38,8 +38,7 @@ func (client Client) GenerateContent(content []*genai.Content) (*genai.GenerateC
 		client.model,
 		content,
 		&genai.GenerateContentConfig{
-			Temperature:     &temp,
-			MaxOutputTokens: 800,
+			Temperature: &temp,
 			SystemInstruction: &genai.Content{
 				Role: "system",
 				Parts: []*genai.Part{
