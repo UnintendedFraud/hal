@@ -16,7 +16,7 @@ import (
 
 const MAX_HISTORY = 50
 
-const DISCORD_MAX_CHAR = 4000
+const DISCORD_MAX_CHAR = 1500
 
 const (
 	SPAM_PERIOD         = 5 * time.Minute
