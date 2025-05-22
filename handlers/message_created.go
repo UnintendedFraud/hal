@@ -126,11 +126,11 @@ func sendResponse(s *discordgo.Session, channelID string, response string) {
 }
 
 func truncateIfNeeded(response string) string {
-	if len(response) > DISCORD_MAX_CHAR {
+	if len(response) < DISCORD_MAX_CHAR {
 		return response
 	}
 
-	return fmt.Sprintf("%s %s", response[:3990], "[...]")
+	return fmt.Sprintf("%s %s", response[:DISCORD_MAX_CHAR-10], "[...]")
 }
 
 func containHal(users []*discordgo.User, userID string) bool {
