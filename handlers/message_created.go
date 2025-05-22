@@ -84,7 +84,18 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		return
 	}
 
-	sendResponse(s, m.ChannelID, llmRes.Text())
+	response := llmRes.Text()
+
+	if response == "" {
+		sendResponse(
+			s,
+			m.ChannelID,
+			fmt.Sprintf("X_X: Réponse vide de Hal... [%s - %s]", llmRes.PromptFeedback.BlockReason, llmRes.PromptFeedback.BlockReasonMessage),
+		)
+		return
+	}
+
+	sendResponse(s, m.ChannelID, response)
 }
 
 func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
