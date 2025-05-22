@@ -87,11 +87,13 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 	response := llmRes.Text()
 
 	if response == "" {
-		sendResponse(
-			s,
-			m.ChannelID,
-			fmt.Sprintf("X_X: Réponse vide de Hal... [%s - %s]", llmRes.PromptFeedback.BlockReason, llmRes.PromptFeedback.BlockReasonMessage),
-		)
+		resBytes, err := llmRes.MarshalJSON()
+		if err != nil {
+			sendResponse(s, m.ChannelID, fmt.Sprintf("X_X: %s", err.Error()))
+			return
+		}
+
+		sendResponse(s, m.ChannelID, fmt.Sprintf("X_X: Réponse vide de Hal... [%s]", string(resBytes)))
 		return
 	}
 
