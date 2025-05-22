@@ -16,6 +16,8 @@ import (
 
 const MAX_HISTORY = 50
 
+const DISCORD_MAX_CHAR = 4000
+
 const (
 	SPAM_PERIOD         = 5 * time.Minute
 	MESSAGES_PER_PERIOD = 10
@@ -118,9 +120,17 @@ func cleanMessage(p string) string {
 }
 
 func sendResponse(s *discordgo.Session, channelID string, response string) {
-	if _, err := s.ChannelMessageSend(channelID, response); err != nil {
+	if _, err := s.ChannelMessageSend(channelID, truncateIfNeeded(response)); err != nil {
 		log.Printf("\nfailed to send the response [%s] to the discord channel [%s]", response, err.Error())
 	}
+}
+
+func truncateIfNeeded(response string) string {
+	if len(response) > DISCORD_MAX_CHAR {
+		return response
+	}
+
+	return fmt.Sprintf("%s %s", response[:3990], "[...]")
 }
 
 func containHal(users []*discordgo.User, userID string) bool {
