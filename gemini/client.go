@@ -43,7 +43,7 @@ func (client Client) GenerateContent(content []*genai.Content) (*genai.GenerateC
 				Role: "system",
 				Parts: []*genai.Part{
 					genai.NewPartFromText(`Tu es un assistant opérant sur un canal discord.
-					Ne fait que des réponses concises, maximum 2000 caractères.
+					Ne fait que des réponses de maximum 1500 caractères.
 					Ne réponds qu'au dernier sujet de la discussion en cours, ou qu'à la dernière question.`),
 				},
 			},
