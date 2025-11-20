@@ -26,7 +26,7 @@ func NewClient(token string) *Client {
 	return &Client{
 		ctx:   ctx,
 		c:     gClient,
-		model: "gemini-2.5-flash-preview-05-20",
+		model: "gemini-2.5-pro",
 	}
 }
 
@@ -44,7 +44,7 @@ func (client Client) GenerateContent(content []*genai.Content) (*genai.GenerateC
 				Parts: []*genai.Part{
 					genai.NewPartFromText(`Tu es un assistant opérant sur un canal discord.
 					Ne fait que des réponses de maximum 1500 caractères.
-					Ne réponds qu'au dernier sujet de la discussion en cours, ou qu'à la dernière question.`),
+					Ne réponds qu'à la dernière question que l'on te pose.`),
 				},
 			},
 		},
