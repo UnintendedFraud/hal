@@ -50,11 +50,12 @@ func (client Client) GenerateContent(message string) (string, error) {
 	}
 	defer res.Body.Close()
 
+	body, err := io.ReadAll(res.Body)
+
 	if res.StatusCode != 200 {
-		return "", fmt.Errorf("LLM returned status code: [%d]", res.StatusCode)
+		return "", fmt.Errorf("LLM returned status code [%d]: %s", res.StatusCode, string(body))
 	}
 
-	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to read the llm response body: %w", err)
 	}
