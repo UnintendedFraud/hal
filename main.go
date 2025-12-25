@@ -8,7 +8,6 @@ import (
 
 	"hal/env"
 	"hal/handlers"
-	"hal/llm"
 
 	discordbot "github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -35,15 +34,6 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
-
-	// ---
-	llmClient := llm.NewClient(&env)
-	res, err := llmClient.GenerateContent("Yo poto")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(res)
-	// ---
 
 	// Wait here until CTRL-C or other term signal is received.
 	sc := make(chan os.Signal, 1)
