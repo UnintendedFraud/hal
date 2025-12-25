@@ -8,6 +8,7 @@ import (
 
 	"hal/env"
 	"hal/handlers"
+	"hal/llm"
 
 	discordbot "github.com/bwmarrin/discordgo"
 	"github.com/joho/godotenv"
@@ -19,7 +20,7 @@ func main() {
 	fmt.Println("HAL started")
 	env := env.GetEnvVariables()
 
-	handler := handlers.Init(env.OpenaiHalToken, env.GeminiToken)
+	handler := handlers.Init(&env)
 
 	discordToken := fmt.Sprintf("Bot %s", env.Token)
 	dgclient, err := discordbot.New(discordToken)
@@ -34,6 +35,17 @@ func main() {
 		fmt.Println("error opening connection,", err)
 		return
 	}
+
+	// ---
+	llmClient := llm.NewClient(&env)
+	res, err := llmClient.GenerateContent("Quelle est la capitale de la France?")
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("### RES ###")
+	fmt.Println(res)
+	// ---
 
 	// Wait here until CTRL-C or other term signal is received.
 	sc := make(chan os.Signal, 1)

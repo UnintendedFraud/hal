@@ -7,7 +7,9 @@ import (
 	"regexp"
 	"time"
 
+	"hal/env"
 	"hal/gemini"
+	"hal/llm"
 	"hal/openai"
 
 	"github.com/bwmarrin/discordgo"
@@ -32,7 +34,10 @@ var spams = []string{
 }
 
 // messagesHistory []*openai.ChatMessage = []*openai.ChatMessage{}
-var geminiHistory []*genai.Content = []*genai.Content{}
+var (
+	geminiHistory []*genai.Content = []*genai.Content{}
+	llmHistory    []string         = []string{}
+)
 
 var usersHistoryCount map[string]*userHistoryCount = map[string]*userHistoryCount{}
 
@@ -45,21 +50,21 @@ type userHistoryCount struct {
 type Handler struct {
 	openaiClient *openai.Client
 	geminiClient *gemini.Client
+	llmClient    *llm.Client
 }
 
-func Init(openaiToken string, geminiToken string) Handler {
+func Init(env *env.Env) Handler {
 	return Handler{
-		openaiClient: openai.NewClient(openaiToken),
-		geminiClient: gemini.NewClient(geminiToken),
+		openaiClient: openai.NewClient(env.OpenaiHalToken),
+		geminiClient: gemini.NewClient(env.GeminiToken),
+		llmClient:    llm.NewClient(env),
 	}
 }
-
-// Tramp: 161970441441902592
 
 func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCreate) {
 	isHal := m.Author.ID == s.State.User.ID
 
-	addMessageToHistory(m.Message, isHal)
+	// addMessageToHistory(m.Message, isHal)
 
 	if isHal || !containHal(m.Mentions, s.State.User.ID) {
 		return
@@ -72,7 +77,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		return
 	}
 
-	llmRes, err := h.geminiClient.GenerateContent(geminiHistory)
+	llmRes, err := h.llmClient.GenerateContent(cleanMessage(m.Content))
 	if err != nil {
 		sendResponse(
 			s,
@@ -84,48 +89,40 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		return
 	}
 
-	response := llmRes.Text()
-
-	if response == "" {
-		resBytes, err := llmRes.MarshalJSON()
-		if err != nil {
-			sendResponse(s, m.ChannelID, fmt.Sprintf("X_X: %s", err.Error()))
-			return
-		}
-
-		sendResponse(s, m.ChannelID, fmt.Sprintf("X_X: Réponse vide de Hal... [%s]", string(resBytes)))
+	if llmRes == "" {
+		sendResponse(s, m.ChannelID, "X_X: Réponse vide de Hal...")
 		return
 	}
 
-	sendResponse(s, m.ChannelID, response)
+	sendResponse(s, m.ChannelID, llmRes)
 }
 
-func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
-	message := cleanMessage(m.Content)
-	if message == "" {
-		return geminiHistory
-	}
-
-	var role string
-	if isHal {
-		role = "model"
-	} else {
-		role = "user"
-	}
-
-	geminiHistory = append(geminiHistory, &genai.Content{
-		Role: role,
-		Parts: []*genai.Part{
-			genai.NewPartFromText(message),
-		},
-	})
-
-	if len(geminiHistory) > MAX_HISTORY {
-		geminiHistory = geminiHistory[1:]
-	}
-
-	return geminiHistory
-}
+// func addMessageToHistory(m *discordgo.Message, isHal bool) []*genai.Content {
+// 	message := cleanMessage(m.Content)
+// 	if message == "" {
+// 		return geminiHistory
+// 	}
+//
+// 	var role string
+// 	if isHal {
+// 		role = "model"
+// 	} else {
+// 		role = "user"
+// 	}
+//
+// 	geminiHistory = append(geminiHistory, &genai.Content{
+// 		Role: role,
+// 		Parts: []*genai.Part{
+// 			genai.NewPartFromText(message),
+// 		},
+// 	})
+//
+// 	if len(geminiHistory) > MAX_HISTORY {
+// 		geminiHistory = geminiHistory[1:]
+// 	}
+//
+// 	return geminiHistory
+// }
 
 func cleanMessage(p string) string {
 	regex := regexp.MustCompile(`<@\d+>`)

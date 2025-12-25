@@ -30,6 +30,9 @@ func GetEnvVariables() Env {
 
 		GeminiToken:        os.Getenv("GEMINI_API_KEY"),
 		HalResponsePercent: halResPercent,
+		LlmEndpoint:        os.Getenv("LLM_ENDPOINT"),
+		LlmToken:           os.Getenv("LLM_TOKEN"),
+		LlmModel:           os.Getenv("LLM_MODEL"),
 	}
 }
 
@@ -41,4 +44,7 @@ type Env struct {
 	OpenaiHalToken     string
 	GeminiToken        string
 	HalResponsePercent int
+	LlmEndpoint        string
+	LlmToken           string
+	LlmModel           string
 }
