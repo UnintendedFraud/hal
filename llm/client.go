@@ -36,11 +36,15 @@ func (client Client) GenerateContent(message string) (string, error) {
 
 	payloadBytes, _ := json.Marshal(payload)
 
-	res, err := client.http.Post(
-		client.endpoint,
-		"application/json",
-		bytes.NewBuffer(payloadBytes),
-	)
+	req, err := http.NewRequest("POST", client.endpoint, bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", client.token))
+
+	res, err := client.http.Do(req)
 	if err != nil {
 		return "", err
 	}
