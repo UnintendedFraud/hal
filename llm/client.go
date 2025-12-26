@@ -53,7 +53,7 @@ func (client Client) GenerateContent(message string) (string, error) {
 	body, err := io.ReadAll(res.Body)
 
 	if res.StatusCode != 200 {
-		return "", fmt.Errorf("LLM returned status code [%d]: %s", res.StatusCode, string(body))
+		return "", fmt.Errorf("LLM returned status code [%d]", res.StatusCode)
 	}
 
 	if err != nil {
