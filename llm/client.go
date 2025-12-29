@@ -20,7 +20,7 @@ type Client struct {
 
 func NewClient(env *env.Env) *Client {
 	return &Client{
-		http:     http.Client{Timeout: 10 * time.Second},
+		http:     http.Client{Timeout: 30 * time.Second},
 		token:    env.LlmToken,
 		model:    env.LlmModel,
 		endpoint: env.LlmEndpoint,
@@ -52,7 +52,7 @@ func (client Client) GenerateContent(message string) (string, error) {
 
 	body, err := io.ReadAll(res.Body)
 
-	if res.StatusCode != 200 {
+	if res.StatusCode >= 400 {
 		return "", fmt.Errorf("LLM returned status code [%d]", res.StatusCode)
 	}
 
