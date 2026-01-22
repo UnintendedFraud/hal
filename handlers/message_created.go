@@ -82,7 +82,7 @@ func (h Handler) OnMessageCreated(s *discordgo.Session, m *discordgo.MessageCrea
 		sendResponse(
 			s,
 			m.ChannelID,
-			fmt.Sprintf("X_X: %s", err.Error()),
+			"X_X: Le serveur est mort...",
 		)
 
 		log.Printf("\nfailed to query the llm with the following prompt [%s]. Error: %s", m.Content, err.Error())
